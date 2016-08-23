@@ -164,22 +164,15 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
-    _.each (collection, function(item) {
+    iterator = iterator || _.indentity;
+    _.each (collection, function (item) {
       if (accumulator === undefined) {
-        accumulator = item
+        accumulator = item;
       } else {
         accumulator = iterator(accumulator, item);
       }
-    });
+    })
     return accumulator;
-    // _.each (collection, function (item) {
-    //   if (accumulator === undefined) {
-    //     accumulator = collection[0]
-    //   } else {
-    //     accumulator = iterator(accumulator, item);
-    //   }
-    // })
-    // return accumulator;
   };
 
   // Determine if the array or object contains a given value (using `===`).
@@ -198,12 +191,28 @@
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
+    return _.reduce(collection, function(isTruthy, item) {
+      if (!isTruthy) {
+        return false;
+      }
+      if (iterator===undefined) {
+        return _.identity(item);
+      }
+      return Boolean(iterator(item))
+    }, true)
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
+    iterator = iterator || _.identity
+    return _.reduce (collection, function(anyTrue, item) {
+      if (anyTrue) {
+        return true;
+      }
+      return Boolean (iterator(item))
+    }, false)
   };
 
 
@@ -226,6 +235,14 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    var args = Array.prototype.slice.call(arguments)
+    var result = {};
+    _.each (args, function(item) {
+      _.each (item, function(key) {
+        result[key] = item[key]
+      })
+    })
+    return result;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
