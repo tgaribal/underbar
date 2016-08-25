@@ -106,7 +106,7 @@
   _.uniq = function(array) {
     var results = [];
     _.each(array, function(item){
-      if (_.indexOf(results, item) === -1)
+      if (!_.contains(results, item))
         results.push(item)
     })
     return results;
@@ -235,18 +235,25 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
-    var args = Array.prototype.slice.call(arguments)
-      _.each (args, function(item) {
-        _.each (Object.keys(item), function(key) {
-          obj[key] = item[key]
-        })
+    _.each (arguments, function(item) {
+      _.each (Object.keys(item), function(key) {
+        obj[key] = item[key]
       })
-      return obj;     
+    })
+    return obj;     
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    _.each (arguments, function(item) {
+      _.each (Object.keys(item), function(key) {
+        if (!obj.hasOwnProperty(key)) {
+          obj[key] = item[key]
+        }
+      })
+    })
+    return obj;    
   };
 
 
@@ -290,6 +297,19 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var cache={};
+    var args;
+    var result;
+    return function (args) { 
+      if (args in cache) {       
+        result = cache[args]
+      } else {
+        args = Array.prototype.slice.call(arguments);
+        result = func.apply(this, args)
+        cache[args] = result
+      } 
+      return result;
+    } 
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -299,6 +319,9 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    var args = Array.prototype.slice.call(arguments).slice(2)
+    var results = function() {func.apply(this, args)}
+    setTimeout(results, wait);
   };
 
 
@@ -313,6 +336,12 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    var copy = array.slice()
+    var results = [];
+    _.each(array, function (item, i, arr) {
+      results.push(item) = item;
+    })
+    return results;
   };
 
 
