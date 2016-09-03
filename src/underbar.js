@@ -164,14 +164,13 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
-    iterator = iterator || _.indentity;
-    _.each (collection, function (item) {
+    _.each(collection, function (item) {
       if (accumulator === undefined) {
         accumulator = item;
       } else {
         accumulator = iterator(accumulator, item);
       }
-    })
+    });
     return accumulator;
   };
 
@@ -297,20 +296,22 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
-    var cache={};
-    var args;
+    var cache = {};
     var result;
-    return function (args) { 
-      if (args in cache) {       
+    var args;
+    return function(args) {
+      if (args in cache) {
         result = cache[args]
       } else {
-        args = Array.prototype.slice.call(arguments);
+        args = Array.prototype.slice.call(arguments)
         result = func.apply(this, args)
-        cache[args] = result
-      } 
+        cache[args] = result;
+      }
       return result;
-    } 
+    }
+
   };
+
 
   // Delays a function for the given number of milliseconds, and then calls
   // it with the arguments supplied.
@@ -319,9 +320,8 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
-    var args = Array.prototype.slice.call(arguments).slice(2)
-    var results = function() {func.apply(this, args)}
-    setTimeout(results, wait);
+    var args = Array.prototype.slice.call(arguments).slice(2);
+    setTimeout(function(){return func.apply(this, args)}, wait);
   };
 
 
@@ -338,8 +338,15 @@
   _.shuffle = function(array) {
     var copy = array.slice()
     var results = [];
-    _.each(array, function (item, i, arr) {
-      results.push(item) = item;
+    var indices = []; 
+    _.each(copy, function (item, i, arr) {
+      var x = Math.floor(Math.random()*array.length)
+      if (_.indexOf(indices, x) === -1) {
+        results[x] = item;
+        indices.push(x)
+      } else {
+        copy.push(item);
+      }
     })
     return results;
   };
